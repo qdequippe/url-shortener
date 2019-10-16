@@ -1,0 +1,42 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Link index{% endblock %}
+
+{% block body %}
+    <h1>Link index</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Address</th>
+                <th>Target</th>
+                <th>VisitCount</th>
+                <th>actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for link in links %}
+            <tr>
+                <td>{{ link.id }}</td>
+                <td>
+                    <a href="{{ url('link_got_to', {'address': link.address}) }}" target="_blank">{{ url('link_got_to', {'address': link.address}) }}</a>
+                </td>
+                <td>
+                    <a href="{{ link.target }}" target="_blank">{{ link.target }}</a>
+                </td>
+                <td>{{ link.visitCount }}</td>
+                <td>
+                    <a href="{{ path('link_stats', {'id': link.id}) }}">stats</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="4">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('link_new') }}">Create new</a>
+{% endblock %}

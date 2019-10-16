@@ -1,0 +1,58 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Link{% endblock %}
+
+{% block body %}
+    <h1>Link</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ link.id }}</td>
+            </tr>
+            <tr>
+                <th>Target</th>
+                <td>{{ link.target }}</td>
+            </tr>
+            <tr>
+                <th>Address</th>
+                <td>{{ link.address }}</td>
+            </tr>
+            <tr>
+                <th>VisitCount</th>
+                <td>{{ link.visitCount }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Total</th>
+                <th>Browser</th>
+                <th>Os</th>
+                <th>Referrers</th>
+                <th>Countries</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for visit in visits %}
+                <tr>
+                    <td>{{ visit.id }}</td>
+                    <td>{{ visit.total }}</td>
+                    <td>{{ visit.browser }}</td>
+                    <td>{{ visit.os }}</td>
+                    <td>{{ visit.referrers|join(', ') }}</td>
+                    <td>{{ visit.countries|join(', ') }}</td>
+                </tr>
+            {% endfor %}
+            <tr></tr>
+        </tbody>
+    </table>
+
+    <a href="{{ path('link_index') }}">back to list</a>
+
+    {{ include('link/_delete_form.html.twig') }}
+{% endblock %}
