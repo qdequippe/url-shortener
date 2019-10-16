@@ -102,6 +102,15 @@
     "gedmo/doctrine-extensions": {
         "version": "v2.4.37"
     },
+    "geocoder-php/common-http": {
+        "version": "4.2.0"
+    },
+    "geocoder-php/ipstack-provider": {
+        "version": "0.1.0"
+    },
+    "geocoder-php/plugin": {
+        "version": "1.1.0"
+    },
     "hidehalo/nanoid-php": {
         "version": "1.1.6"
     },
@@ -135,8 +144,17 @@
     "ocramius/proxy-manager": {
         "version": "2.2.3"
     },
+    "php-http/discovery": {
+        "version": "1.7.0"
+    },
+    "php-http/httplug": {
+        "version": "v2.0.0"
+    },
     "php-http/message-factory": {
         "version": "v1.0.2"
+    },
+    "php-http/promise": {
+        "version": "v1.0.0"
     },
     "phpdocumentor/reflection-common": {
         "version": "2.0.0"
@@ -170,6 +188,9 @@
     },
     "psr/log": {
         "version": "1.1.0"
+    },
+    "psr/simple-cache": {
+        "version": "1.0.1"
     },
     "sensio/framework-extra-bundle": {
         "version": "5.2",
@@ -576,6 +597,9 @@
     },
     "webmozart/assert": {
         "version": "1.5.0"
+    },
+    "willdurand/geocoder": {
+        "version": "4.2.1"
     },
     "zendframework/zend-code": {
         "version": "3.4.0"

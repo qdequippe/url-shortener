@@ -5,11 +5,19 @@ namespace App\Controller;
 use App\Entity\Link;
 use App\Entity\Visit;
 use App\Form\LinkType;
+use App\Plugin\FakeIpPlugin;
 use App\Repository\LinkRepository;
 use App\Repository\VisitRepository;
 use DeviceDetector\DeviceDetector;
+use Geocoder\Exception\Exception as GeocoderException;
+use Geocoder\Location;
+use Geocoder\Plugin\PluginProvider;
+use Geocoder\Provider\Ipstack\Ipstack;
+use Geocoder\Query\GeocodeQuery;
 use Hidehalo\Nanoid\Client;
+use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpClient\HttplugClient;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -62,31 +70,55 @@ class LinkController extends AbstractController
 
     /**
      * @Route("/{address}", name="link_got_to", methods={"GET"})
-     * @param Request $request
-     * @param Link    $link
+     * @param Request         $request
+     * @param Link            $link
+     * @param LoggerInterface $logger
      *
      * @return Response
      */
-    public function goTo(Request $request, Link $link): Response
+    public function goTo(Request $request, Link $link, LoggerInterface $logger): Response
     {
         $dd = new DeviceDetector($request->headers->get('user-agent'));
         $dd->parse();
 
-
-
         if (!$dd->isBot()) {
+            $httpClient = new HttplugClient();
+            $geocoder = new Ipstack($httpClient, '6243387722d5ea20fd5364fa9d9ffce9');
+            $pluginProvider = new PluginProvider($geocoder, [new FakeIpPlugin()]);
+
             $visit = new Visit();
             $visit->setLink($link);
             $visit->setBrowser($dd->getClient()['name']);
             $visit->setOs($dd->getOs()['name']);
             $visit->setReferrers([$request->headers->get('referer', 'Direct')]);
-            $visit->setCountries(['Unknown']);
+
+            $countries = [];
+            try {
+                $results = $pluginProvider->geocodeQuery(GeocodeQuery::create($request->getClientIp()));
+
+                /** @var Location $result */
+                foreach ($results as $result) {
+                    $countries[] = $result->getCountry()->getName();
+                }
+
+                if (empty($countries)) {
+                    $countries = ['Unknown'];
+                }
+            } catch (GeocoderException $exception) {
+                $logger->error($exception->getMessage());
+
+                $countries = ['Unknown'];
+            }
+
+            $visit->setCountries($countries);
 
             $link->incVisitCount();
 
+            // send GA tracking also
+
             $em = $this->getDoctrine()->getManager();
             $em->persist($visit);
-            $em->flush();;
+            $em->flush();
         }
 
         return new RedirectResponse($link->getTarget());
