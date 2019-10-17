@@ -76,14 +76,14 @@ class LinkController extends AbstractController
      *
      * @return Response
      */
-    public function goTo(Request $request, Link $link, LoggerInterface $logger): Response
+    public function goTo(Request $request, Link $link, LoggerInterface $logger, string $apiStackKey): Response
     {
         $dd = new DeviceDetector($request->headers->get('user-agent'));
         $dd->parse();
 
         if (!$dd->isBot()) {
             $httpClient = new HttplugClient();
-            $geocoder = new Ipstack($httpClient, '6243387722d5ea20fd5364fa9d9ffce9');
+            $geocoder = new Ipstack($httpClient, $apiStackKey);
             $pluginProvider = new PluginProvider($geocoder, [new FakeIpPlugin()]);
 
             $visit = new Visit();
