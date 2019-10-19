@@ -1,0 +1,43 @@
+language: php
+
+sudo: false
+
+services:
+    - mysql
+
+cache:
+    yarn: true
+    directories:
+        - $HOME/.composer/cache/files
+        - ./bin/.phpunit
+
+matrix:
+    fast_finish: true
+    include:
+        - php: 5.6
+        - php: 7.0
+        - php: 7.2
+        - php: 7.3
+        - php: 7.4
+
+before-install:
+    - composer self-update
+
+install:
+    - composer install
+    - php bin/console doctrine:database:create --env=test
+    - php bin/console doctrine:schema:create --env=test
+    - php bin/console doctrine:fixtures:load -n --env=test
+
+script:
+    - ./bin/phpunit
+    # this checks that the YAML config files contain no syntax errors
+    - ./bin/console lint:yaml config --parse-tags
+    # this checks that the Twig template files contain no syntax errors
+    - ./bin/console lint:twig templates --env=prod
+    # this checks that the XLIFF translations contain no syntax errors
+    - ./bin/console lint:xliff translations
+    # this checks that the application doesn't use dependencies with known security vulnerabilities
+    - ./bin/console security:check
+    # this checks that Doctrine's mapping configurations are valid
+    - ./bin/console doctrine:schema:validate --skip-sync -vvv --no-interaction
