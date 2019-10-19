@@ -68,7 +68,7 @@ class Link
 
     public function incVisitCount(): self
     {
-        $this->visitCount++;
+        ++$this->visitCount;
 
         return $this;
     }

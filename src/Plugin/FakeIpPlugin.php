@@ -7,6 +7,7 @@
 
 namespace App\Plugin;
 
+use Faker\Factory;
 use Geocoder\Plugin\Plugin;
 use Geocoder\Query\GeocodeQuery;
 use Geocoder\Query\Query;
@@ -19,7 +20,9 @@ class FakeIpPlugin implements Plugin
             return $next($query);
         }
 
-        $text = str_replace('127.0.0.1', '123.123.123.123', $query->getText(), $count);
+        $faker = Factory::create();
+
+        $text = str_replace('127.0.0.1', $faker->ipv4, $query->getText(), $count);
 
         if ($count > 0) {
             $query = $query->withText($text);

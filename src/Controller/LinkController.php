@@ -21,12 +21,15 @@ use Symfony\Component\HttpClient\HttplugClient;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\Annotation\Route;
+use TheIconic\Tracking\GoogleAnalytics\Analytics;
 
 class LinkController extends AbstractController
 {
     /**
      * @Route("/links", name="link_index", methods={"GET"})
+     *
      * @param LinkRepository $linkRepository
      *
      * @return Response
@@ -40,6 +43,7 @@ class LinkController extends AbstractController
 
     /**
      * @Route("/links/new", name="link_new", methods={"GET","POST"})
+     *
      * @param Request $request
      *
      * @return Response
@@ -70,15 +74,20 @@ class LinkController extends AbstractController
 
     /**
      * @Route("/{address}", name="link_got_to", methods={"GET"})
-     * @param Request         $request
-     * @param Link            $link
-     * @param LoggerInterface $logger
+     *
+     * @param Request          $request
+     * @param Link             $link
+     * @param LoggerInterface  $logger
+     * @param string           $apiStackKey
+     * @param string           $gaKey
+     * @param SessionInterface $session
      *
      * @return Response
      */
-    public function goTo(Request $request, Link $link, LoggerInterface $logger, string $apiStackKey): Response
+    public function goTo(Request $request, Link $link, LoggerInterface $logger, string $apiStackKey, string $gaKey, SessionInterface $session): Response
     {
-        $dd = new DeviceDetector($request->headers->get('user-agent'));
+        $userAgent = $request->headers->get('user-agent');
+        $dd = new DeviceDetector($userAgent);
         $dd->parse();
 
         if (!$dd->isBot()) {
@@ -92,9 +101,11 @@ class LinkController extends AbstractController
             $visit->setOs($dd->getOs()['name']);
             $visit->setReferrers([$request->headers->get('referer', 'Direct')]);
 
+            $clientIp = $request->getClientIp();
+
             $countries = [];
             try {
-                $results = $pluginProvider->geocodeQuery(GeocodeQuery::create($request->getClientIp()));
+                $results = $pluginProvider->geocodeQuery(GeocodeQuery::create($clientIp));
 
                 /** @var Location $result */
                 foreach ($results as $result) {
@@ -114,11 +125,22 @@ class LinkController extends AbstractController
 
             $link->incVisitCount();
 
-            // send GA tracking also
-
             $em = $this->getDoctrine()->getManager();
             $em->persist($visit);
             $em->flush();
+
+            $session->start();
+
+            $analytics = (new Analytics())
+                ->setProtocolVersion('1')
+                ->setTrackingId($gaKey)
+                ->setClientId($request->getSession()->getId())
+                ->setDocumentPath(sprintf('/%s', $link->getAddress()))
+                ->setAnonymizeIp(true)
+                ->setIpOverride($clientIp)
+                ->setUserAgentOverride($userAgent);
+
+            $analytics->sendPageview();
         }
 
         return new RedirectResponse($link->getTarget());
@@ -126,8 +148,8 @@ class LinkController extends AbstractController
 
     /**
      * @Route("/links/{id}/stats", name="link_stats", methods={"GET"})
-     * @param Link            $link
      *
+     * @param Link            $link
      * @param VisitRepository $visitRepository
      *
      * @return Response
@@ -144,6 +166,7 @@ class LinkController extends AbstractController
 
     /**
      * @Route("/links/{id}", name="link_delete", methods={"DELETE"})
+     *
      * @param Request $request
      * @param Link    $link
      *
