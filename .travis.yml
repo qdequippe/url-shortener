@@ -21,6 +21,7 @@ matrix:
 before-install:
     - composer self-update
     - wget https://get.symfony.com/cli/installer -O - | bash
+    - sudo mv /home/travis/.symfony/bin/symfony /usr/local/bin/symfony
 
 install:
     - composer install
