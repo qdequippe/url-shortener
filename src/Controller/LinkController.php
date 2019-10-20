@@ -28,6 +28,45 @@ use TheIconic\Tracking\GoogleAnalytics\Analytics;
 class LinkController extends AbstractController
 {
     /**
+     * @var LoggerInterface
+     */
+    private $logger;
+
+    /**
+     * @var string
+     */
+    private $apiStackKey;
+
+    /**
+     * @var string
+     */
+    private $gaKey;
+
+    /**
+     * @var SessionInterface
+     */
+    private $session;
+
+    /**
+     * @var VisitRepository
+     */
+    private $visitRepository;
+
+    public function __construct(
+        LoggerInterface $logger,
+        string $apiStackKey,
+        string $gaKey,
+        SessionInterface $session,
+        VisitRepository $visitRepository
+    ) {
+        $this->logger = $logger;
+        $this->apiStackKey = $apiStackKey;
+        $this->gaKey = $gaKey;
+        $this->session = $session;
+        $this->visitRepository = $visitRepository;
+    }
+
+    /**
      * @Route("/links", name="link_index", methods={"GET"})
      *
      * @param LinkRepository $linkRepository
@@ -77,63 +116,78 @@ class LinkController extends AbstractController
      *
      * @param Request          $request
      * @param Link             $link
-     * @param LoggerInterface  $logger
-     * @param string           $apiStackKey
-     * @param string           $gaKey
-     * @param SessionInterface $session
      *
      * @return Response
      */
-    public function goTo(Request $request, Link $link, LoggerInterface $logger, string $apiStackKey, string $gaKey, SessionInterface $session): Response
+    public function goTo(Request $request, Link $link): Response
     {
         $userAgent = $request->headers->get('user-agent');
         $dd = new DeviceDetector($userAgent);
         $dd->parse();
 
-        if (!$dd->isBot()) {
-            $httpClient = new HttplugClient();
-            $geocoder = new Ipstack($httpClient, $apiStackKey);
-            $pluginProvider = new PluginProvider($geocoder, [new FakeIpPlugin()]);
+        $redirectResponse = new RedirectResponse($link->getTarget());
 
+        if ($dd->isBot()) {
+            return $redirectResponse;
+        }
+
+        $em = $this->getDoctrine()->getManager();
+        $browserName = isset($dd->getClient()['name']) ? $dd->getClient()['name'] : 'Other';
+        $osName = isset($dd->getOs()['name']) ? $dd->getOs()['name'] : 'Other';
+
+        /** @var Visit $visit */
+        $visit = $this->visitRepository->findVisitInLastHour($link);
+
+        if (null === $visit) {
             $visit = new Visit();
             $visit->setLink($link);
-            $visit->setBrowser($dd->getClient()['name']);
-            $visit->setOs($dd->getOs()['name']);
-            $visit->setReferrers([$request->headers->get('referer', 'Direct')]);
+            $em->persist($visit);
+        }
 
-            $clientIp = $request->getClientIp();
+        $visit->incTotal();
+        $visit->incBrowser($browserName);
+        $visit->incOs($osName);
+        $visit->addReferrer($request->headers->get('referer', 'Email, SMS, Direct'));
 
-            $countries = [];
-            try {
-                $results = $pluginProvider->geocodeQuery(GeocodeQuery::create($clientIp));
+        $clientIp = $request->getClientIp();
 
-                /** @var Location $result */
-                foreach ($results as $result) {
-                    $countries[] = $result->getCountry()->getName();
-                }
+        $httpClient = new HttplugClient();
+        $geocoder = new Ipstack($httpClient, $this->apiStackKey);
+        $pluginProvider = new PluginProvider($geocoder, [new FakeIpPlugin()]);
 
-                if (empty($countries)) {
-                    $countries = ['Unknown'];
-                }
-            } catch (GeocoderException $exception) {
-                $logger->error($exception->getMessage());
+        $countries = [];
+        try {
+            $results = $pluginProvider->geocodeQuery(GeocodeQuery::create($clientIp));
 
-                $countries = ['Unknown'];
+            /** @var Location $result */
+            foreach ($results as $result) {
+                $countries[] = $result->getCountry()->getName();
             }
 
-            $visit->setCountries($countries);
+            if (empty($countries)) {
+                $countries = ['Unknown'];
+            }
+        } catch (GeocoderException $exception) {
+            $this->logger->error($exception->getMessage());
 
-            $link->incVisitCount();
+            $countries = ['Unknown'];
+        }
 
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($visit);
-            $em->flush();
+        foreach ($countries as $country) {
+            $visit->addCountry($country);
+        }
 
-            $session->start();
+        $link->incVisitCount();
 
+        $em->flush();
+
+        $this->session->start();
+        $this->session->save();
+
+        if (!empty($this->gaKey)) {
             $analytics = (new Analytics())
                 ->setProtocolVersion('1')
-                ->setTrackingId($gaKey)
+                ->setTrackingId($this->gaKey)
                 ->setClientId($request->getSession()->getId())
                 ->setDocumentPath(sprintf('/%s', $link->getAddress()))
                 ->setAnonymizeIp(true)

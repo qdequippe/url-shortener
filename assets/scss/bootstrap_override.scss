@@ -1,0 +1,17 @@
+$card-spacer-y: 1rem;
+$card-spacer-x: 1.25rem;
+$card-border-color: #edf2f9;
+$border-radius: .375rem;
+
+@import "~bootstrap/scss/functions";
+@import "~bootstrap/scss/variables";
+@import "~bootstrap/scss/mixins";
+
+@import "~bootstrap/scss/card";
+
+.card {
+  @extend .card;
+  box-shadow: 0 7px 14px 0 rgba(59,65,94,.1),0 3px 6px 0 rgba(0,0,0,.07);
+}
+
+@import "~bootstrap/scss/bootstrap";

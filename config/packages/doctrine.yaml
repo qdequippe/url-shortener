@@ -20,3 +20,18 @@ doctrine:
                 dir: '%kernel.project_dir%/src/Entity'
                 prefix: 'App\Entity'
                 alias: App
+        dql:
+            datetime_functions:
+                date: DoctrineExtensions\Query\Mysql\Date
+                day: DoctrineExtensions\Query\Mysql\Day
+                dayofweek: DoctrineExtensions\Query\Mysql\DayOfWeek
+                dayofyear: DoctrineExtensions\Query\Mysql\DayOfYear
+                hour: DoctrineExtensions\Query\Mysql\Hour
+                last_day: DoctrineExtensions\Query\Mysql\LastDay
+                now: DoctrineExtensions\Query\Mysql\Now
+                month: DoctrineExtensions\Query\Mysql\Month
+                week: DoctrineExtensions\Query\Mysql\Week
+                weekday: DoctrineExtensions\Query\Mysql\WeekDay
+                year: DoctrineExtensions\Query\Mysql\Year
+                yearmonth: DoctrineExtensions\Query\Mysql\YearMonth
+                yearweek: DoctrineExtensions\Query\Mysql\YearWeek

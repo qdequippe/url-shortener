@@ -3,56 +3,70 @@
 {% block title %}Link{% endblock %}
 
 {% block body %}
-    <h1>Link</h1>
+    {% set addressUrl = url('link_got_to', {'address': link.address}) %}
 
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ link.id }}</td>
-            </tr>
-            <tr>
-                <th>Target</th>
-                <td>{{ link.target }}</td>
-            </tr>
-            <tr>
-                <th>Address</th>
-                <td>{{ link.address }}</td>
-            </tr>
-            <tr>
-                <th>VisitCount</th>
-                <td>{{ link.visitCount }}</td>
-            </tr>
-        </tbody>
-    </table>
+    <div class="card mb-3">
+        <div class="card-body">
+            <div class="row align-items-center">
+                <div class="col">
+                    <h5 class="mb-0">Stats for: <a href="{{ addressUrl }}" target="_blank">{{ addressUrl }}</a></h5>
+                </div>
+                <div class="col-auto">
+                    {{ link.target }}
+                </div>
+            </div>
+        </div>
+    </div>
 
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Total</th>
-                <th>Browser</th>
-                <th>Os</th>
-                <th>Referrers</th>
-                <th>Countries</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for visit in visits %}
-                <tr>
-                    <td>{{ visit.id }}</td>
-                    <td>{{ visit.total }}</td>
-                    <td>{{ visit.browser }}</td>
-                    <td>{{ visit.os }}</td>
-                    <td>{{ visit.referrers|join(', ') }}</td>
-                    <td>{{ visit.countries|join(', ') }}</td>
-                </tr>
-            {% endfor %}
-            <tr></tr>
-        </tbody>
-    </table>
+    <div class="card">
+        <div class="card-header bg-light">
+            Total clicks: {{ link.visitCount }}
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-12">
+                    <div class="chart-container h-25">
+                    <canvas id="visitsPerPeriodChart" width="400" height="150"></canvas>
 
-    <a href="{{ path('link_index') }}">back to list</a>
+                    </div>
+                </div>
+            </div>
 
-    {{ include('link/_delete_form.html.twig') }}
+            <hr>
+
+            <div class="row">
+                <div class="col-6">
+                    <h5>Referrers</h5>
+                    <canvas id="referrersPieChart" width="400" height="400" data-values="{{ referrers_data(link, 'toto')['values'] }}" data-keys="{{ referrers_data(link, 'toto')['keys'] }}"></canvas>
+                </div>
+                <div class="col-6">
+                    <h5>Browsers</h5>
+                    <canvas id="browsersChart" width="400" height="400" data-values="{{ browsers_data(link, '')['values'] }}" data-keys="{{ browsers_data(link, '')['keys'] }}"></canvas>
+                </div>
+            </div>
+
+            <hr>
+
+            <div class="row">
+                <div class="col-6">
+                    <h5>Countries</h5>
+                    <canvas id="countriesPieChart" width="400" height="400" data-values="{{ countries_data(link, 'toto')['values'] }}" data-keys="{{ countries_data(link, 'toto')['keys'] }}"></canvas>
+                </div>
+                <div class="col-6">
+                    <h5>OS</h5>
+                    <canvas id="osChart" width="400" height="400"  data-values="{{ os_data(link, '')['values'] }}" data-keys="{{ os_data(link, '')['keys'] }}"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="card-footer">
+            {{ include('link/_delete_form.html.twig') }}
+        </div>
+    </div>
+
+    <div class="my-5 text-center">
+        <a href="{{ path('link_index') }}" class="btn btn-outline-primary">
+            <i class="fas fa-long-arrow-alt-left"></i>
+            back to list
+        </a>
+    </div>
 {% endblock %}
