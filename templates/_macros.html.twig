@@ -1,0 +1,11 @@
+{% macro generate_qr_code_button(message) %}
+    <button class="btn btn-outline-primary btn-sm"
+            data-toggle="modal"
+            data-target="#qrCodeModal"
+            data-qr-code-data-uri="{{ qr_code_data_uri(message) }}"
+            data-qr-code-download-url="{{ qr_code_path(message) }}"
+            data-qr-code-message="{{ message }}">
+        <i class="fas fa-qrcode"></i>
+    </button>
+{% endmacro %}
+

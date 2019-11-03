@@ -1,4 +1,7 @@
 {
+    "bacon/bacon-qr-code": {
+        "version": "2.0.0"
+    },
     "beberlei/doctrineextensions": {
         "version": "v1.2.3"
     },
@@ -22,6 +25,9 @@
         "files": [
             "config/packages/test/dama_doctrine_test_bundle.yaml"
         ]
+    },
+    "dasprid/enum": {
+        "version": "1.0.0"
     },
     "doctrine/annotations": {
         "version": "1.0",
@@ -132,6 +138,12 @@
     "egulias/email-validator": {
         "version": "2.1.11"
     },
+    "endroid/qr-code": {
+        "version": "3.7.2"
+    },
+    "endroid/qr-code-bundle": {
+        "version": "3.3.4"
+    },
     "fig/link-util": {
         "version": "1.0.0"
     },
@@ -177,11 +189,17 @@
     "jdorn/sql-formatter": {
         "version": "v1.2.17"
     },
+    "khanamiryan/qrcode-detector-decoder": {
+        "version": "1.0.2"
+    },
     "monolog/monolog": {
         "version": "1.25.1"
     },
     "mustangostang/spyc": {
         "version": "0.6.3"
+    },
+    "myclabs/php-enum": {
+        "version": "1.7.2"
     },
     "nikic/php-parser": {
         "version": "v4.2.4"
@@ -660,6 +678,18 @@
     },
     "theiconic/php-ga-measurement-protocol": {
         "version": "v2.7.1"
+    },
+    "twig/extensions": {
+        "version": "1.0",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "master",
+            "version": "1.0",
+            "ref": "a86723ee8d8b2f9437c8ce60a5546a1c267da5ed"
+        },
+        "files": [
+            "config/packages/twig_extensions.yaml"
+        ]
     },
     "twig/twig": {
         "version": "v2.12.0"

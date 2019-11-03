@@ -7,7 +7,7 @@ This [Symfony](https://symfony.com) application is a [URL shortener](https://en.
 Todo
 ====
 
-- [ ] Design
+- [X] Design
 - [ ] Tests
 - [ ] User account
 - [ ] Domain management feature
@@ -15,3 +15,4 @@ Todo
 - [ ] Statistics graph
 - [ ] API
 - [ ] Documentation
+- [X] QR Code

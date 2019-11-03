@@ -13,6 +13,7 @@
         "ext-iconv": "*",
         "ext-json": "*",
         "beberlei/doctrineextensions": "^1.2",
+        "endroid/qr-code-bundle": "^3.3",
         "friendsofphp/php-cs-fixer": "^2.15",
         "geocoder-php/ipstack-provider": "^0.1.0",
         "geocoder-php/plugin": "^1.1",
@@ -30,7 +31,6 @@
         "symfony/form": "4.3.*",
         "symfony/framework-bundle": "4.3.*",
         "symfony/http-client": "dev-master",
-        "symfony/intl": "4.3.*",
         "symfony/monolog-bundle": "^3.1",
         "symfony/orm-pack": "*",
         "symfony/process": "4.3.*",
@@ -43,7 +43,8 @@
         "symfony/web-link": "4.3.*",
         "symfony/webpack-encore-bundle": "^1.6",
         "symfony/yaml": "4.3.*",
-        "theiconic/php-ga-measurement-protocol": "^2.7"
+        "theiconic/php-ga-measurement-protocol": "^2.7",
+        "twig/extensions": "^1.5"
     },
     "require-dev": {
         "dama/doctrine-test-bundle": "^6.1",

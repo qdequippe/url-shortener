@@ -1,16 +1,13 @@
 import '../scss/app.scss';
 
-import './countries_chart';
-import './referrers_chart';
-import './visits_chart';
-import './browsers_chart';
-import './os_chart';
+import $ from 'jquery';
+import 'bootstrap';
+import '@fortawesome/fontawesome-free/js/all';
 
-const $ = require('jquery');
-require('bootstrap');
-
-import '@fortawesome/fontawesome-free/js/all'
+import './qr_code_modal';
+import './clipboard';
 
 $(document).ready(function() {
     $('[data-toggle="popover"]').popover();
+    $('[data-toggle="tooltip"]').tooltip();
 });

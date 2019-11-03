@@ -1,6 +1,8 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Link index{% endblock %}
+{% import '_macros.html.twig' as macros %}
+
+{% block title %}Links{% endblock %}
 
 {% block body %}
     <div class="row">
@@ -9,43 +11,53 @@
                 <div class="bg-light card-header">
                     <div class="align-items-center row">
                         <div class="col">
-                            <h5 class="mb-0">Link index</h5>
+                            <h5 class="mb-0">Links</h5>
                         </div>
                         <div class="col-auto text-right">
-                            <a href="{{ path('link_new') }}" class="btn btn-primary">Create new</a>
+                            <a href="{{ path('link_new') }}" class="btn btn-primary btn-sm"><i class="fas fa-plus"></i> New</a>
                         </div>
                     </div>
                 </div>
                 <div class="border-top p-0 card-body">
-                    <table class="table">
+                    <table class="table table-striped mb-0">
                         <thead>
                             <tr>
-                                <th>Id</th>
-                                <th>Address</th>
-                                <th>Target</th>
-                                <th>Visit count</th>
-                                <th>Actions</th>
+                                <th>Original URL</th>
+                                <th>Short URL</th>
+                                <th>Clicks</th>
+                                <th></th>
                             </tr>
                         </thead>
                         <tbody>
                             {% for link in links %}
+                                {% set linkAddressUrl = url('link_got_to', {'address': link.address}) %}
                                 <tr>
-                                    <td>{{ link.id }}</td>
-                                    <td>
-                                        <a href="{{ url('link_got_to', {'address': link.address}) }}" target="_blank">
-                                            {{ url('link_got_to', {'address': link.address}) }}
-                                            <i class="fas fa-external-link-alt ml-1"></i>
-                                        </a>
-                                    </td>
-                                    <td>
+                                    <td class="py-2 align-middle">
                                         <a href="{{ link.target }}" target="_blank">
                                             {{ link.target }}
                                             <i class="fas fa-external-link-alt ml-1"></i>
                                         </a>
                                     </td>
-                                    <td>{{ link.visitCount }}</td>
-                                    <td>
-                                        <a href="{{ path('link_stats', {'id': link.id}) }}">stats</a>
+                                    <td class="py-2 align-middle">
+                                        <div class="d-flex align-items-center">
+                                            <button class="btn btn-outline-primary btn-sm mr-2"
+                                                    data-clipboard-text="{{ linkAddressUrl }}"
+                                                    data-copied-text="Copied to clipboard!"
+                                                    data-toggle="tooltip"
+                                                    data-placement="bottom"
+                                                    title="Copy to clipboard">
+                                                <i class="fas fa-copy"></i>
+                                            </button>
+                                            <a href="{{ linkAddressUrl }}" target="_blank">{{ linkAddressUrl }}</a>
+                                        </div>
+                                    </td>
+                                    <td class="py-2 align-middle">{{ link.visitCount }}</td>
+                                    <td class="py-2 align-middle">
+                                        {{ macros.generate_qr_code_button(linkAddressUrl) }}
+                                        <a href="{{ path('link_stats', {'id': link.id}) }}" class="btn btn-outline-primary btn-sm">
+                                            <i class="fas fa-chart-area"></i>
+                                            Stats
+                                        </a>
                                     </td>
                                 </tr>
                             {% else %}
@@ -55,6 +67,27 @@
                             {% endfor %}
                         </tbody>
                     </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="qrCodeModal" tabindex="-1" role="dialog" aria-labelledby="qrCodeModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="qrCodeModalLabel">QR Code</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body text-center">
+                    <img src="" alt="QR Code image">
+                    <a href="" target="_blank"></a>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <a href="" class="btn btn-primary" id="qrCodeModalButtonDownload" target="_blank">Download image</a>
                 </div>
             </div>
         </div>
