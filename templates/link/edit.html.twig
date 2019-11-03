@@ -1,0 +1,19 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New Link{% endblock %}
+
+{% block body %}
+    <a href="{{ path('link_index') }}" class="btn btn-link">back to list</a>
+
+    <div class="card">
+        <div class="card-header">
+            <h5 class="mb-0">Edit Link</h5>
+        </div>
+        <div class="border-top card-body">
+            {{ form_start(form) }}
+            {{ form_widget(form) }}
+            <button class="btn btn-primary">{{ button_label|default('Save') }}</button>
+            {{ form_end(form) }}
+        </div>
+    </div>
+{% endblock %}

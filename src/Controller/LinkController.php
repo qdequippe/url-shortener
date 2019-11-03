@@ -102,10 +102,46 @@ class LinkController extends AbstractController
             $entityManager->persist($link);
             $entityManager->flush();
 
+            $client = \Symfony\Component\Panther\Client::createChromeClient();
+            $crawler = $client->request('GET', $link->getTarget());
+            $title = $crawler->filter('title')->html();
+
+            $title = str_replace('</title>', '', str_replace('<title>', '', $title));
+
+            $link->setTitle($title);
+            $entityManager->flush();
+
             return $this->redirectToRoute('link_index');
         }
 
         return $this->render('link/new.html.twig', [
+            'link' => $link,
+            'form' => $form->createView(),
+        ]);
+    }
+
+    /**
+     * @Route("/links/{id}/edit", name="link_edit", methods={"GET","POST"})
+     *
+     * @param Request $request
+     * @param Link    $link
+     *
+     * @return Response
+     */
+    public function edit(Request $request, Link $link): Response
+    {
+        $form = $this->createForm(LinkType::class, $link);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager = $this->getDoctrine()->getManager();
+
+            $entityManager->flush();
+
+            return $this->redirectToRoute('link_index');
+        }
+
+        return $this->render('link/edit.html.twig', [
             'link' => $link,
             'form' => $form->createView(),
         ]);

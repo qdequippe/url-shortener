@@ -58,7 +58,14 @@
             </div>
         </div>
         <div class="card-footer">
-            {{ include('link/_delete_form.html.twig') }}
+            <button type="button"
+                    class="btn btn-danger btn-sm"
+                    data-toggle="modal"
+                    data-target="#deleteModal"
+                    data-csrf-token="{{ csrf_token('delete' ~ link.id) }}"
+                    data-action-path="{{ path('link_delete', {'id': link.id}) }}">
+                Delete
+            </button>
         </div>
     </div>
 

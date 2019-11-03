@@ -8,18 +8,43 @@
         {% endblock %}
     </head>
     <body>
-    <header class="d-flex flex-column flex-md-row align-items-center p-3 px-md-4 mb-3 bg-white border-bottom box-shadow">
-        <h5 class="my-0 font-weight-normal">Acme</h5>
-        <nav class="my-2 my-md-0 ml-md-3 mr-md-auto">
-            <a class="p-2 text-dark" href="https://github.com/qdequippe/url-shortener" target="_blank">Github</a>
-            <a class="p-2 text-dark" href="#">Report</a>
-        </nav>
-        <a class="btn btn-link mr-1" href="#">Sign In</a>
-        <a class="btn btn-outline-primary" href="#">Sign up</a>
-    </header>
+        <header class="navbar navbar-expand-md bg-white border-bottom box-shadow mb-3">
+            <a class="navbar-brand text-dark" href="#">Acme</a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse" aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarCollapse">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item ">
+                        <a class="nav-link" href="{{ path('link_index') }}">Links</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Domains</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="https://github.com/qdequippe/url-shortener" target="_blank">
+                            <i class="fab fa-github"></i>
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">
+                            Report
+                        </a>
+                    </li>
+                </ul>
+            </div>
+            <a class="btn btn-link" href="#">Sign In</a>
+            <a class="btn btn-outline-primary" href="#">Sign up</a>
+        </header>
         <div class="container">
             {% block body %}{% endblock %}
         </div>
+
+        {{ include('_delete_modal.html.twig') }}
+        {{ include('_qr_code_modal.html.twig') }}
+
         {% block javascripts %}
             {{ encore_entry_script_tags('app') }}
         {% endblock %}

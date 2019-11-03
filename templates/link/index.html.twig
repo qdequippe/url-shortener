@@ -14,50 +14,72 @@
                             <h5 class="mb-0">Links</h5>
                         </div>
                         <div class="col-auto text-right">
-                            <a href="{{ path('link_new') }}" class="btn btn-primary btn-sm"><i class="fas fa-plus"></i> New</a>
+                            <a href="{{ path('link_new') }}" class="btn btn-primary"><i class="fas fa-plus"></i> New</a>
                         </div>
                     </div>
                 </div>
                 <div class="border-top p-0 card-body">
-                    <table class="table table-striped mb-0">
-                        <thead>
-                            <tr>
-                                <th>Original URL</th>
-                                <th>Short URL</th>
-                                <th>Clicks</th>
-                                <th></th>
-                            </tr>
-                        </thead>
+                    <table class="table mb-0">
                         <tbody>
                             {% for link in links %}
                                 {% set linkAddressUrl = url('link_got_to', {'address': link.address}) %}
                                 <tr>
-                                    <td class="py-2 align-middle">
-                                        <a href="{{ link.target }}" target="_blank">
-                                            {{ link.target }}
-                                            <i class="fas fa-external-link-alt ml-1"></i>
-                                        </a>
-                                    </td>
-                                    <td class="py-2 align-middle">
-                                        <div class="d-flex align-items-center">
-                                            <button class="btn btn-outline-primary btn-sm mr-2"
-                                                    data-clipboard-text="{{ linkAddressUrl }}"
-                                                    data-copied-text="Copied to clipboard!"
-                                                    data-toggle="tooltip"
-                                                    data-placement="bottom"
-                                                    title="Copy to clipboard">
-                                                <i class="fas fa-copy"></i>
-                                            </button>
-                                            <a href="{{ linkAddressUrl }}" target="_blank">{{ linkAddressUrl }}</a>
+                                    <td class="py-3 align-middle">
+                                        <div class="media">
+                                            {% set faviconUrl = google_s2_favicon(link.target) %}
+                                            <img src="{{ faviconUrl }}" alt="{{ link.target }} favicon" width="16" class="mr-3">
+
+                                            <div class="media-body align-items-center">
+                                                <h6 class="mt-0 mb-1">
+                                                    <a href="{{ path('link_stats', {'id': link.id}) }}">
+                                                        {{ linkAddressUrl }}
+                                                    </a>
+                                                </h6>
+                                                <ul class="list-unstyled mb-0">
+                                                    <li>
+                                                        <small>
+                                                            {% if link.title is not null %}
+                                                                {{ link.title }}
+                                                            {% else %}
+                                                                {{ link.target }}
+                                                            {% endif %}
+                                                        </small>
+                                                    </li>
+                                                    <li>
+                                                        <small class="text-muted"><i class="fas fa-calendar-alt mr-1"></i> {{ link.createdAt|localizeddate('medium', 'none') }}</small>
+                                                    </li>
+                                                </ul>
+                                            </div>
                                         </div>
                                     </td>
-                                    <td class="py-2 align-middle">{{ link.visitCount }}</td>
-                                    <td class="py-2 align-middle">
-                                        {{ macros.generate_qr_code_button(linkAddressUrl) }}
-                                        <a href="{{ path('link_stats', {'id': link.id}) }}" class="btn btn-outline-primary btn-sm">
-                                            <i class="fas fa-chart-area"></i>
-                                            Stats
+                                    <td class="py-3 align-middle">{{ link.visitCount }} clicks</td>
+                                    <td class="py-3 align-middle text-right">
+                                        <button class="btn btn-outline-primary btn-sm mx-1"
+                                                data-clipboard-text="{{ linkAddressUrl }}"
+                                                data-copied-text="Copied to clipboard!"
+                                                data-toggle="tooltip"
+                                                title="Copy to clipboard">
+                                            <i class="fas fa-copy"></i>
+                                        </button>
+                                        <button class="btn btn-outline-primary btn-sm mx-1"
+                                                data-toggle="modal"
+                                                data-target="#qrCodeModal"
+                                                data-qr-code-data-uri="{{ qr_code_data_uri(linkAddressUrl) }}"
+                                                data-qr-code-download-url="{{ qr_code_path(linkAddressUrl) }}"
+                                                data-qr-code-message="{{ linkAddressUrl }}">
+                                            <i class="fas fa-qrcode"></i>
+                                        </button>
+                                        <a href="" class="btn btn-outline-primary btn-sm mx-1">
+                                            <i class="fas fa-pen"></i>
                                         </a>
+                                        <button type="button"
+                                                class="btn btn-outline-primary btn-sm mx-1"
+                                                data-toggle="modal"
+                                                data-target="#deleteModal"
+                                                data-csrf-token="{{ csrf_token('delete' ~ link.id) }}"
+                                                data-action-path="{{ path('link_delete', {'id': link.id}) }}">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
                                     </td>
                                 </tr>
                             {% else %}
@@ -71,26 +93,4 @@
             </div>
         </div>
     </div>
-
-    <div class="modal fade" id="qrCodeModal" tabindex="-1" role="dialog" aria-labelledby="qrCodeModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="qrCodeModalLabel">QR Code</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body text-center">
-                    <img src="" alt="QR Code image">
-                    <a href="" target="_blank"></a>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <a href="" class="btn btn-primary" id="qrCodeModalButtonDownload" target="_blank">Download image</a>
-                </div>
-            </div>
-        </div>
-    </div>
-
 {% endblock %}

@@ -144,6 +144,9 @@
     "endroid/qr-code-bundle": {
         "version": "3.3.4"
     },
+    "facebook/webdriver": {
+        "version": "1.7.1"
+    },
     "fig/link-util": {
         "version": "1.0.0"
     },
@@ -465,6 +468,9 @@
     },
     "symfony/orm-pack": {
         "version": "v1.0.6"
+    },
+    "symfony/panther": {
+        "version": "v0.6.0"
     },
     "symfony/phpunit-bridge": {
         "version": "4.3",
