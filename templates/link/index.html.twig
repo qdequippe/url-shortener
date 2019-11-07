@@ -11,7 +11,7 @@
                 <div class="bg-light card-header">
                     <div class="align-items-center row">
                         <div class="col">
-                            <h5 class="mb-0">Links</h5>
+                            <h5 class="mb-0">Links ({{ pagination.getTotalItemCount }})</h5>
                         </div>
                         <div class="col-auto text-right">
                             <a href="{{ path('link_new') }}" class="btn btn-primary"><i class="fas fa-plus"></i> New</a>
@@ -21,10 +21,10 @@
                 <div class="border-top p-0 card-body">
                     <table class="table mb-0">
                         <tbody>
-                            {% for link in links %}
+                            {% for link in pagination %}
                                 {% set linkAddressUrl = url('link_got_to', {'address': link.address}) %}
-                                <tr>
-                                    <td class="py-3 align-middle">
+                                <tr class="d-flex">
+                                    <td class="py-3 align-middle col-8">
                                         <div class="media">
                                             {% set faviconUrl = google_s2_favicon(link.target) %}
                                             <img src="{{ faviconUrl }}" alt="{{ link.target }} favicon" width="16" class="mr-3">
@@ -52,8 +52,8 @@
                                             </div>
                                         </div>
                                     </td>
-                                    <td class="py-3 align-middle">{{ link.visitCount }} clicks</td>
-                                    <td class="py-3 align-middle text-right">
+                                    <td class="py-3 align-middle col-1 d-none d-md-flex">{{ link.visitCount }} clicks</td>
+                                    <td class="py-3 align-middle text-right col-3">
                                         <button class="btn btn-outline-primary btn-sm mx-1"
                                                 data-clipboard-text="{{ linkAddressUrl }}"
                                                 data-copied-text="Copied to clipboard!"
@@ -61,34 +61,46 @@
                                                 title="Copy to clipboard">
                                             <i class="fas fa-copy"></i>
                                         </button>
-                                        <button class="btn btn-outline-primary btn-sm mx-1"
-                                                data-toggle="modal"
-                                                data-target="#qrCodeModal"
-                                                data-qr-code-data-uri="{{ qr_code_data_uri(linkAddressUrl) }}"
-                                                data-qr-code-download-url="{{ qr_code_path(linkAddressUrl) }}"
-                                                data-qr-code-message="{{ linkAddressUrl }}">
-                                            <i class="fas fa-qrcode"></i>
-                                        </button>
-                                        <a href="" class="btn btn-outline-primary btn-sm mx-1">
+                                        <span data-toggle="modal"
+                                              data-target="#qrCodeModal"
+                                              data-qr-code-data-uri="{{ qr_code_data_uri(linkAddressUrl) }}"
+                                              data-qr-code-download-url="{{ qr_code_path(linkAddressUrl) }}"
+                                              data-qr-code-message="{{ linkAddressUrl }}">
+                                            <button class="btn btn-outline-primary btn-sm mx-1"
+                                                    data-toggle="tooltip"
+                                                    title="QR Code">
+                                                <i class="fas fa-qrcode"></i>
+                                            </button>
+                                        </span>
+                                        <a href="{{ path('link_edit', {'id': link.id}) }}"
+                                           class="btn btn-outline-primary btn-sm mx-1"
+                                           data-toggle="tooltip"
+                                           title="Edit">
                                             <i class="fas fa-pen"></i>
                                         </a>
-                                        <button type="button"
-                                                class="btn btn-outline-primary btn-sm mx-1"
-                                                data-toggle="modal"
-                                                data-target="#deleteModal"
-                                                data-csrf-token="{{ csrf_token('delete' ~ link.id) }}"
-                                                data-action-path="{{ path('link_delete', {'id': link.id}) }}">
+                                        <span data-toggle="modal"
+                                              data-target="#deleteModal"
+                                              data-csrf-token="{{ csrf_token('delete' ~ link.id) }}"
+                                              data-action-path="{{ path('link_delete', {'id': link.id}) }}">
+                                             <button type="button"
+                                                     class="btn btn-outline-primary btn-sm mx-1"
+                                                     data-toggle="tooltip"
+                                                     title="Delete">
                                             <i class="fas fa-trash"></i>
                                         </button>
+                                        </span>
                                     </td>
                                 </tr>
                             {% else %}
                                 <tr>
-                                    <td colspan="4">no records found</td>
+                                    <td colspan="3">no records found. Create a new one <a href="{{ path('link_new') }}">here</a></td>
                                 </tr>
                             {% endfor %}
                         </tbody>
                     </table>
+                    <div class="d-flex justify-content-center">
+                        {{ knp_pagination_render(pagination) }}
+                    </div>
                 </div>
             </div>
         </div>

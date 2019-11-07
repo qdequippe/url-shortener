@@ -18,6 +18,7 @@
         "geocoder-php/ipstack-provider": "^0.1.0",
         "geocoder-php/plugin": "^1.1",
         "hidehalo/nanoid-php": "^1.1",
+        "knplabs/knp-paginator-bundle": "^4.0",
         "nyholm/psr7": "^1.2",
         "piwik/device-detector": "^3.12",
         "psr/http-client": "^1.0",
@@ -45,6 +46,7 @@
         "symfony/web-link": "4.3.*",
         "symfony/webpack-encore-bundle": "^1.6",
         "symfony/yaml": "4.3.*",
+        "tgalopin/html-sanitizer-bundle": "^1.1",
         "theiconic/php-ga-measurement-protocol": "^2.7",
         "twig/extensions": "^1.5"
     },

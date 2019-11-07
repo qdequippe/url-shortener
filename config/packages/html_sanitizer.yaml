@@ -1,0 +1,6 @@
+html_sanitizer:
+    default_sanitizer: 'default'
+    sanitizers:
+        default:
+            extensions:
+                - 'basic'

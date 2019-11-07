@@ -15,6 +15,7 @@ use Geocoder\Plugin\PluginProvider;
 use Geocoder\Provider\Ipstack\Ipstack;
 use Geocoder\Query\GeocodeQuery;
 use Hidehalo\Nanoid\Client;
+use HtmlSanitizer\SanitizerInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpClient\HttplugClient;
@@ -51,32 +52,42 @@ class LinkController extends AbstractController
      * @var VisitRepository
      */
     private $visitRepository;
+    /**
+     * @var SanitizerInterface
+     */
+    private $sanitizer;
 
     public function __construct(
         LoggerInterface $logger,
         string $apiStackKey,
         string $gaKey,
         SessionInterface $session,
-        VisitRepository $visitRepository
+        VisitRepository $visitRepository,
+        SanitizerInterface $sanitizer
     ) {
         $this->logger = $logger;
         $this->apiStackKey = $apiStackKey;
         $this->gaKey = $gaKey;
         $this->session = $session;
         $this->visitRepository = $visitRepository;
+        $this->sanitizer = $sanitizer;
     }
 
     /**
      * @Route("/links", name="link_index", methods={"GET"})
      *
+     * @param Request        $request
      * @param LinkRepository $linkRepository
      *
      * @return Response
      */
-    public function index(LinkRepository $linkRepository): Response
+    public function index(Request $request, LinkRepository $linkRepository): Response
     {
+        $page = $request->query->getInt('page', 1);
+        $pagination = $linkRepository->findLinksPaginated($page);
+
         return $this->render('link/index.html.twig', [
-            'links' => $linkRepository->findAll(),
+            'pagination' => $pagination,
         ]);
     }
 
@@ -106,9 +117,7 @@ class LinkController extends AbstractController
             $crawler = $client->request('GET', $link->getTarget());
             $title = $crawler->filter('title')->html();
 
-            $title = str_replace('</title>', '', str_replace('<title>', '', $title));
-
-            $link->setTitle($title);
+            $link->setTitle($this->sanitizer->sanitize($title));
             $entityManager->flush();
 
             return $this->redirectToRoute('link_index');

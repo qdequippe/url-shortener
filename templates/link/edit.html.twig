@@ -10,6 +10,8 @@
             <h5 class="mb-0">Edit Link</h5>
         </div>
         <div class="border-top card-body">
+            <p>{{ url('link_got_to', {'address': link.address}) }}</p>
+            <p>{{ link.target }}</p>
             {{ form_start(form) }}
             {{ form_widget(form) }}
             <button class="btn btn-primary">{{ button_label|default('Save') }}</button>
